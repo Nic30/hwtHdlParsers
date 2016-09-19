@@ -11,8 +11,9 @@ setup(name='hwtHdlParsers',
       author_email='michal.o.socials@gmail.com',
       install_requires=[
         'hwtoolkit',
-        'hwtLib'
+        'hwtLib',
+        'hdlConvertor'
       ],
       license='MIT',
-      packages = find_packages(),
+      packages=find_packages(),
       zip_safe=False)
