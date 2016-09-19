@@ -10,3 +10,5 @@ Main purpose is to import vhdl/verilog code to HWT designs.
 Interfaces (any HWT interface like predefined axi4 or any user interface) can be also extracted. 
 
 Objects extracted from hdl difer only in serialization, they are not serialized again, just files are used.
+
+There are **examples** in hwtHdlParsers tests.
