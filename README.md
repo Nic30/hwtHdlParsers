@@ -1,4 +1,6 @@
 # hwtHdlParsers
+[![Build Status](https://travis-ci.org/Nic30/hwtHdlParsers.svg?branch=master)](https://travis-ci.org/Nic30/hwtHdlParsers)
+
 (System) Verilog, VHDL compatibility layer for HWToolkit library
 
 This module allows HWTlibrary to use vhdl/(system) verilog (=HDL as Hardware Decription Languages).
