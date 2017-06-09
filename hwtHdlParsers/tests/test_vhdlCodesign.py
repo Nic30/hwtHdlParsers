@@ -1,28 +1,28 @@
 import unittest
 
-from hdl_toolkit.hdlObjects.expr import ExprComparator
-from hdl_toolkit.hdlObjects.operator import Operator
-from hdl_toolkit.hdlObjects.operatorDefs import AllOps
-from hdl_toolkit.hdlObjects.typeShortcuts import hInt
-from hdl_toolkit.hdlObjects.types.defs import INT, UINT, PINT, SLICE
-from hdl_toolkit.interfaces.std import Clk, \
+from hwt.hdlObjects.expr import ExprComparator
+from hwt.hdlObjects.operator import Operator
+from hwt.hdlObjects.operatorDefs import AllOps
+from hwt.hdlObjects.typeShortcuts import hInt
+from hwt.hdlObjects.types.defs import INT, UINT, PINT, SLICE
+from hwt.interfaces.std import Clk, \
     Rst_n, BramPort, VldSynced
-from hdl_toolkit.synthesizer.param import Param
-from hdl_toolkit.synthesizer.shortcuts import synthesised
 from hwtHdlParsers.tests.baseSynthesizerTC import VHDL_DIR
 from hwtHdlParsers.unitFromHdl import UnitFromHdl
-from hwtLib.interfaces.amba import AxiLite, AxiStream_withUserAndStrb, AxiStream, \
+from hwtLib.amba.axiLite import AxiLite
+from hwtLib.amba.axis import AxiStream_withUserAndStrb, AxiStream, \
     AxiStream_withUserAndNoStrb, AxiStream_withoutSTRB
 from hwtLib.tests.synthesizer.interfaceLevel.baseSynthesizerTC import BaseSynthesizerTC
-from python_toolkit.arrayQuery import single, NoValueExc
+from hwt.pyUtils.arrayQuery import single
+from hwt.synthesizer.shortcuts import synthesised
+from hwt.synthesizer.param import Param
 
 
 class VhdlCodesignTC(BaseSynthesizerTC):
 
     def testTypeInstances(self):
-        from hdl_toolkit.hdlObjects.types import defs
         from hwtHdlParsers.hdlContexts import BaseVhdlContext
-        self.assertIs(INT, defs.INT)
+        self.assertIs(INT, INT)
         ctx = BaseVhdlContext.getBaseCtx()
         self.assertIs(ctx['integer'], INT)
 
