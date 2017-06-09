@@ -1,21 +1,21 @@
 import unittest
 
-from hwt.hdlObjects.expr import ExprComparator
 from hwt.hdlObjects.operator import Operator
 from hwt.hdlObjects.operatorDefs import AllOps
 from hwt.hdlObjects.typeShortcuts import hInt
 from hwt.hdlObjects.types.defs import INT, UINT, PINT, SLICE
 from hwt.interfaces.std import Clk, \
     Rst_n, BramPort, VldSynced
+from hwt.pyUtils.arrayQuery import single, NoValueExc
+from hwt.synthesizer.param import Param
+from hwt.synthesizer.shortcuts import synthesised
+from hwtHdlParsers.hdlObjects.expr import ExprComparator
 from hwtHdlParsers.tests.baseSynthesizerTC import VHDL_DIR
 from hwtHdlParsers.unitFromHdl import UnitFromHdl
 from hwtLib.amba.axiLite import AxiLite
 from hwtLib.amba.axis import AxiStream_withUserAndStrb, AxiStream, \
     AxiStream_withUserAndNoStrb, AxiStream_withoutSTRB
 from hwtLib.tests.synthesizer.interfaceLevel.baseSynthesizerTC import BaseSynthesizerTC
-from hwt.pyUtils.arrayQuery import single, NoValueExc
-from hwt.synthesizer.shortcuts import synthesised
-from hwt.synthesizer.param import Param
 
 
 class VhdlCodesignTC(BaseSynthesizerTC):

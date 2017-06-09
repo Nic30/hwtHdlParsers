@@ -6,7 +6,7 @@ from hwt.synthesizer.interfaceLevel.unitUtils import defaultUnitName
 from hwt.synthesizer.shortcuts import toRtlAndSave
 from hwtHdlParsers.loader import langFromExtension, ParserFileInfo
 from hwtHdlParsers.unitFromHdl import UnitFromHdl
-from python_toolkit.fileHelpers import find_files
+from hwt.pyUtils.fileHelpers import find_files
 
 
 def fileSyntaxCheck(fileInfo, timeoutInterval=20):
