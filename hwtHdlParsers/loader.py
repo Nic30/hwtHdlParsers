@@ -2,7 +2,7 @@ import hdlConvertor
 from hwtHdlParsers.baseParser import BaseParser, ParserException
 from hwtHdlParsers.verilogParser import VerilogParser
 from hwtHdlParsers.vhdlParser import VhdlParser
-from hdl_toolkit.hdlObjects.hdlContext import HdlContext
+from hwt.hdlObjects.hdlContext import HdlContext
 from hwtHdlParsers.hdlContexts import BaseVhdlContext, BaseVerilogContext
 
 

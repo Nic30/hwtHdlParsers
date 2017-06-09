@@ -1,5 +1,6 @@
-from hdl_toolkit.hdlObjects.reference import HdlRef
 from hwtHdlParsers.baseParser import BaseParser
+from hwtHdlParsers.hdlObjects.reference import HdlRef
+
 
 class VerilogParser(BaseParser):
     def typeFromJson(self, jType, ctx):

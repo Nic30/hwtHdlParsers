@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 from myhdl.conversion._toVHDL import _shortversion
 
-from hdl_toolkit.hdlObjects.functionContainer import FunctionContainer
-from hdl_toolkit.hdlObjects.reference import HdlRef 
-from hdl_toolkit.hdlObjects.types.bits import Bits
-from hdl_toolkit.hdlObjects.types.defs import BOOL, INT, STR, BIT
-from hdl_toolkit.hdlObjects.types.integer import Integer
-from hdl_toolkit.hdlObjects.hdlContext import HdlContext
+from hwt.hdlObjects.functionContainer import FunctionContainer
+from hwt.hdlObjects.types.bits import Bits
+from hwt.hdlObjects.types.defs import BOOL, INT, STR, BIT
+from hwt.hdlObjects.types.integer import Integer
+from hwtHdlParsers.hdlObjects.hdlContext import HdlContext
+from hwtHdlParsers.hdlObjects.reference import HdlRef 
+
 
 class HDLParseErr(Exception):
     pass

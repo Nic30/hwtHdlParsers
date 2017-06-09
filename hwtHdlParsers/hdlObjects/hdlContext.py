@@ -2,8 +2,8 @@ from hwt.hdlObjects.architecture import Architecture
 from hwt.hdlObjects.entity import Entity
 from hwt.hdlObjects.function import Function
 from hwt.hdlObjects.functionContainer import FunctionContainer
-from hwt.hdlObjects.reference import HdlRef
 from hwt.synthesizer.rtlLevel.mainBases import RtlSignalBase
+from hwtHdlParsers.hdlObjects.reference import HdlRef
 from hwtHdlParsers.nonRedefDict import NonRedefDict
 
 

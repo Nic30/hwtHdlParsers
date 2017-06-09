@@ -1,9 +1,9 @@
 import hdlConvertor
 from itertools import chain
 
-from hdl_toolkit.synthesizer.interfaceLevel.unit import Unit
-from hdl_toolkit.synthesizer.interfaceLevel.unitUtils import defaultUnitName
-from hdl_toolkit.synthesizer.shortcuts import toRtlAndSave
+from hwt.synthesizer.interfaceLevel.unit import Unit
+from hwt.synthesizer.interfaceLevel.unitUtils import defaultUnitName
+from hwt.synthesizer.shortcuts import toRtlAndSave
 from hwtHdlParsers.loader import langFromExtension, ParserFileInfo
 from hwtHdlParsers.unitFromHdl import UnitFromHdl
 from python_toolkit.fileHelpers import find_files

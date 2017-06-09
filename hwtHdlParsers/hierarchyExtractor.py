@@ -1,9 +1,9 @@
 from copy import copy
-import hdlConvertor
 
+import hdlConvertor
+from hwt.pyUtils.arrayQuery import arr_any
 from hwtHdlParsers.defaults import defaultIgnoredRefs
 from hwtHdlParsers.referenceCollector import collectReferences
-from python_toolkit.arrayQuery import arr_any
 
 
 class UnresolvedReferenceError(Exception):

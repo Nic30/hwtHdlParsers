@@ -1,6 +1,6 @@
 from hwtHdlParsers.compileOrderResolver import resolveComplileOrder
 from hwtHdlParsers.loader import ParserLoader, ParserFileInfo
-from python_toolkit.arrayQuery import single
+from hwt.pyUtils.arrayQuery import single
 
 
 def getLib(fileName, fileInfos):

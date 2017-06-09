@@ -13,7 +13,7 @@ from hwtLib.amba.axiLite import AxiLite
 from hwtLib.amba.axis import AxiStream_withUserAndStrb, AxiStream, \
     AxiStream_withUserAndNoStrb, AxiStream_withoutSTRB
 from hwtLib.tests.synthesizer.interfaceLevel.baseSynthesizerTC import BaseSynthesizerTC
-from hwt.pyUtils.arrayQuery import single
+from hwt.pyUtils.arrayQuery import single, NoValueExc
 from hwt.synthesizer.shortcuts import synthesised
 from hwt.synthesizer.param import Param
 

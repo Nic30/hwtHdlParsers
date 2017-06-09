@@ -16,7 +16,6 @@ from hwt.hdlObjects.entity import Entity
 from hwt.hdlObjects.function import Function
 from hwt.hdlObjects.operatorDefs import AllOps
 from hwt.hdlObjects.portItem import PortItem
-from hwt.hdlObjects.reference import HdlRef
 from hwt.hdlObjects.statements import IfContainer, ReturnContainer, \
     WhileContainer
 from hwt.hdlObjects.typeShortcuts import hInt, vec
@@ -26,6 +25,7 @@ from hwt.synthesizer.param import Param
 from hwtHdlParsers.hdlContexts import HDLParseErr 
 from hwtHdlParsers.hdlObjects.hdlContext import HdlContext, RequireImportErr
 from hwtHdlParsers.hdlObjects.package import PackageHeader, PackageBody
+from hwtHdlParsers.hdlObjects.reference import HdlRef
 
 
 class ParserException(Exception):
