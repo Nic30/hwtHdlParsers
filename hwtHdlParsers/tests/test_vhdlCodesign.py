@@ -1,38 +1,38 @@
 import unittest
 
-from hdl_toolkit.hdlObjects.expr import ExprComparator
-from hdl_toolkit.hdlObjects.operator import Operator
-from hdl_toolkit.hdlObjects.operatorDefs import AllOps
-from hdl_toolkit.hdlObjects.typeShortcuts import hInt
-from hdl_toolkit.hdlObjects.types.defs import INT, UINT, PINT, SLICE
-from hdl_toolkit.interfaces.std import Clk, \
+from hwt.hdlObjects.operator import Operator
+from hwt.hdlObjects.operatorDefs import AllOps
+from hwt.hdlObjects.typeShortcuts import hInt
+from hwt.hdlObjects.types.defs import INT, UINT, PINT, SLICE
+from hwt.interfaces.std import Clk, \
     Rst_n, BramPort, VldSynced
-from hdl_toolkit.synthesizer.param import Param
-from hdl_toolkit.synthesizer.shortcuts import synthesised, toRtl
+from hwt.pyUtils.arrayQuery import single, NoValueExc
+from hwt.synthesizer.param import Param
+from hwt.synthesizer.shortcuts import synthesised, toRtl
+from hwtHdlParsers.hdlObjects.expr import ExprComparator
 from hwtHdlParsers.tests.baseSynthesizerTC import VHDL_DIR
-from hwtHdlParsers.tests.vhdlCodesign.bram import Bram
 from hwtHdlParsers.unitFromHdl import UnitFromHdl
-from hwtLib.interfaces.amba import AxiLite, AxiStream_withUserAndStrb, AxiStream, \
+from hwtLib.amba.axiLite import AxiLite
+from hwtLib.amba.axis import AxiStream_withUserAndStrb, AxiStream, \
     AxiStream_withUserAndNoStrb, AxiStream_withoutSTRB
 from hwtLib.tests.synthesizer.interfaceLevel.baseSynthesizerTC import BaseSynthesizerTC
-from python_toolkit.arrayQuery import single, NoValueExc
 
 
 class VhdlCodesignTC(BaseSynthesizerTC):
 
     def testTypeInstances(self):
-        from hdl_toolkit.hdlObjects.types import defs
         from hwtHdlParsers.hdlContexts import BaseVhdlContext
-        self.assertIs(INT, defs.INT)
+        self.assertIs(INT, INT)
         ctx = BaseVhdlContext.getBaseCtx()
         self.assertIs(ctx['integer'], INT)
 
     def test_bramSerializability(self):
         from hwtHdlParsers.tests.vhdlCodesign.bram import Bram
         bram = Bram()
-        s = toRtl(bram)
+        toRtl(bram)
 
     def test_bramIntfDiscovered(self):
+        from hwtHdlParsers.tests.vhdlCodesign.bram import Bram
         bram = Bram()
         bram._loadDeclarations()
         self.assertTrue(hasattr(bram, 'a'), 'port a found')
@@ -45,17 +45,17 @@ class VhdlCodesignTC(BaseSynthesizerTC):
                 self.assertTrue(hasattr(p, propName), 'bram port instance has ' + propName)
                 subPort = getattr(p, propName)
                 self.assertTrue(subPort in p._interfaces,
-                                 "subport %s is in interface._interfaces" % (propName))
+                                "subport %s is in interface._interfaces" % (propName))
 
     def test_axiStreamExtraction(self):
         class AxiStreamSampleEnt(UnitFromHdl):
             _hdlSources = VHDL_DIR + "axiStreamSampleEnt.vhd"
-            
+
             _intfClasses = [AxiStream_withUserAndStrb,
-                          AxiStream,
-                          AxiStream_withUserAndNoStrb,
-                          AxiStream_withoutSTRB]
-            
+                            AxiStream,
+                            AxiStream_withUserAndNoStrb,
+                            AxiStream_withoutSTRB]
+
         u = AxiStreamSampleEnt()
         u._loadDeclarations()
         # [TODO] sometimes resolves as 'RX0_ETH_T' it is not deterministic, need better example
@@ -63,13 +63,11 @@ class VhdlCodesignTC(BaseSynthesizerTC):
         self.assertTrue(hasattr(u, "RX0_CTL"))
         self.assertTrue(hasattr(u, "TX0_ETH"))
         self.assertTrue(hasattr(u, "TX0_CTL"))
-        
+
         self.assertIs(u.RX0_ETH.DATA_WIDTH, u.C_DATA_WIDTH)
         self.assertEqual(u.RX0_ETH.data._dtype.bit_length(), u.C_DATA_WIDTH.get().val)
         self.assertIs(u.RX0_ETH.USER_WIDTH, u.C_USER_WIDTH)
         self.assertEqual(u.RX0_ETH.user._dtype.bit_length(), u.C_USER_WIDTH.get().val)
-        
-        
 
     def test_genericValues(self):
         class GenericValuesSample(UnitFromHdl):
@@ -84,7 +82,7 @@ class VhdlCodesignTC(BaseSynthesizerTC):
             _intfClasses = [Clk, Rst_n]
         u = ClkRstEnt()
         u._loadDeclarations()
-        
+
         self.assertIsInstance(u.ARESETN, Rst_n)
         self.assertIsInstance(u.ACLK, Clk)
 
@@ -105,7 +103,7 @@ class VhdlCodesignTC(BaseSynthesizerTC):
             _intfClasses = [AxiLite, Clk, Rst_n]
         u = AxiLiteSlave2()
         u._loadDeclarations()
-        
+
         self.assertTrue(hasattr(u, "ap_clk"))
         self.assertTrue(hasattr(u, "ap_rst_n"))
         self.assertTrue(hasattr(u, "axilite"))
@@ -127,7 +125,7 @@ class VhdlCodesignTC(BaseSynthesizerTC):
         from hwtHdlParsers.tests.vhdlCodesign.bram import Bram
         bram = Bram()
         bram._loadDeclarations()
-        
+
         self.assertIsS(bram.a)
         self.assertIsS(bram.a.clk)
         self.assertIsS(bram.a.addr)
@@ -146,7 +144,7 @@ class VhdlCodesignTC(BaseSynthesizerTC):
         from hwtHdlParsers.tests.vhdlCodesign.axiLiteBasicSlave import AxiLiteBasicSlave
         a = AxiLiteBasicSlave()  # (intfClasses=[AxiLite_xil, Clk, Rst_n])
         a._loadDeclarations()
-        
+
         self.assertIsS(a.S_AXI)
         self.assertIsS(a.S_AXI.ar)
         self.assertIsS(a.S_AXI.aw)
@@ -175,7 +173,7 @@ class VhdlCodesignTC(BaseSynthesizerTC):
             dw = single(u._entity.generics, lambda x: x.name == "DATA_WIDTH")
         except NoValueExc:
             pass
-        
+
         self.assertTrue(aw is not None)
         self.assertTrue(dw is not None)
 
@@ -185,19 +183,18 @@ class VhdlCodesignTC(BaseSynthesizerTC):
         u._loadDeclarations()
         AW_p = u.axi.ADDR_WIDTH
         DW_p = u.axi.DATA_WIDTH
-        
-        
+
         AW = AW_p.get()
         self.assertEqual(AW, hInt(13))
         DW = DW_p.get()
         self.assertEqual(DW, hInt(14))
-        
+
         # self.assertEqual(u.slv.C_S_AXI_ADDR_WIDTH.get(), AW)
         # self.assertEqual(u.slv.C_S_AXI_DATA_WIDTH.get(), DW)
         #
         # self.assertEqual(u.slv.S_AXI.ADDR_WIDTH.get(), AW)
         # self.assertEqual(u.slv.S_AXI.ADDR_WIDTH.get(), DW)
-        
+
         self.assertEqual(u.axi.ADDR_WIDTH.get(), hInt(13))
         self.assertEqual(u.axi.ar.ADDR_WIDTH.get(), hInt(13))
         self.assertEqual(u.axi.ar.addr._dtype.bit_length(), 13)
@@ -218,7 +215,7 @@ class VhdlCodesignTC(BaseSynthesizerTC):
             _hdlSources = VHDL_DIR + "ap_vldWithParam.vhd"
         u = Ap_vldWithParam()
         u._loadDeclarations()
-        
+
         self.assertIsInstance(u.data, VldSynced)
         # print("Ap_vldWithParam.data_width %d" % id(Ap_vldWithParam.data_width))
         # print("Ap_vldWithParam.data.DATA_WIDTH %d" % id(Ap_vldWithParam.data.DATA_WIDTH))
@@ -274,33 +271,29 @@ class VhdlCodesignTC(BaseSynthesizerTC):
         v = b.staticEval()
         self.assertSequenceEqual(v.val, [hInt(1), hInt(0)])
 
-
     def test_largeBitStrings(self):
-        class BitStringValuesEnt(UnitFromHdl):  
+        class BitStringValuesEnt(UnitFromHdl):
             _hdlSources = VHDL_DIR + "bitStringValuesEnt.vhd"
         u = BitStringValuesEnt()
         u._loadDeclarations()
-        
+
         self.assertEqual(u.C_1.defaultVal.val, 1)
         self.assertEqual(u.C_0.defaultVal.val, 0)
         self.assertEqual(u.C_1b1.defaultVal.val, 1)
         self.assertEqual(u.C_1b0.defaultVal.val, 0)
-        
+
         self.assertEqual(u.C_32b0.defaultVal.val, 0)
         self.assertEqual(u.C_16b1.defaultVal.val, (1 << 16) - 1)
         self.assertEqual(u.C_32b1.defaultVal.val, (1 << 32) - 1)
         self.assertEqual(u.C_128b1.defaultVal.val, (1 << 128) - 1)
-        
-        
-        # print(u._entity)
-    
+
     def test_interfaceArrayExtraction(self):
         class InterfaceArraySample(UnitFromHdl):
-            _hdlSources = VHDL_DIR + "interfaceArraySample.vhd"  
-            _intfClasses = [VldSynced]      
+            _hdlSources = VHDL_DIR + "interfaceArraySample.vhd"
+            _intfClasses = [VldSynced]
         u = InterfaceArraySample()
         u._loadDeclarations()
-        
+
         width = 3
         self.assertEqual(u.a._multipliedBy, hInt(width))
         self.assertEqual(u.a.DATA_WIDTH.get().val, 8)
@@ -311,13 +304,13 @@ class VhdlCodesignTC(BaseSynthesizerTC):
         self.assertEqual(u.b.DATA_WIDTH.get().val, 8)
         self.assertEqual(u.b.data._dtype.bit_length(), 8 * width)
         self.assertEqual(u.b.vld._dtype.bit_length(), width)
-    
+
     def test_SizeExpressions(self):
         class SizeExpressionsSample(UnitFromHdl):
-            _hdlSources = VHDL_DIR + "sizeExpressions.vhd"        
+            _hdlSources = VHDL_DIR + "sizeExpressions.vhd"
         u = SizeExpressionsSample()
         u._loadDeclarations()
-        
+
         A = u.param_A.get()
         B = u.param_B.get()
         self.assertEqual(u.portA._dtype.bit_length(), A.val)
@@ -327,8 +320,8 @@ class VhdlCodesignTC(BaseSynthesizerTC):
         self.assertEqual(u.portE._dtype.bit_length(), B.val * (A.val // 8))
         self.assertEqual(u.portF._dtype.bit_length(), B.val * A.val)
         self.assertEqual(u.portG._dtype.bit_length(), B.val * (A.val - 4))
-        
-    
+
+
 if __name__ == '__main__':
     suite = unittest.TestSuite()
     suite.addTest(VhdlCodesignTC('test_bramSerializability'))

@@ -1,5 +1,5 @@
-from hdl_toolkit.interfaces.std import BramPort
-from hdl_toolkit.synthesizer.shortcuts import toRtl
+from hwt.interfaces.std import BramPort
+from hwt.synthesizer.shortcuts import toRtl
 from hwtHdlParsers.unitFromHdl import UnitFromHdl
 
 

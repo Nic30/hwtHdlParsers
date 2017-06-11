@@ -1,5 +1,5 @@
-from hdl_toolkit.hdlObjects.operatorDefs import AllOps
-from hdl_toolkit.synthesizer.rtlLevel.mainBases import RtlSignalBase
+from hwt.hdlObjects.operatorDefs import AllOps
+from hwt.synthesizer.rtlLevel.mainBases import RtlSignalBase
 from hwtHdlParsers.baseParser import BaseParser
 
 

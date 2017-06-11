@@ -1,6 +1,6 @@
 from hwtHdlParsers.defaults import defaultIgnoredRefs
 from hwtHdlParsers.hierarchyExtractor import DesignFile
-from python_toolkit.arrayQuery import single, where
+from hwt.pyUtils.arrayQuery import single, where
 
 
 class CircularReferenceError(Exception):

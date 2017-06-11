@@ -1,7 +1,7 @@
-from hdl_toolkit.interfaces.std import Clk, Rst_n
-from hdl_toolkit.interfaces.std import FifoReader, FifoWriter 
-from hdl_toolkit.synthesizer.interfaceLevel.unitFromHdl import UnitFromHdl
-from hdl_toolkit.synthesizer.shortcuts import toRtl
+from hwt.interfaces.std import Clk, Rst_n
+from hwt.interfaces.std import FifoReader, FifoWriter 
+from hwt.synthesizer.shortcuts import toRtl
+from hwtHdlParsers.unitFromHdl import UnitFromHdl
 
 
 class Fifo(UnitFromHdl):

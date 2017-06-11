@@ -1,10 +1,9 @@
 import unittest
 
-from hdl_toolkit.hdlObjects.typeShortcuts import hInt
-from hdl_toolkit.interfaces.all import allInterfaces
+from hwt.hdlObjects.typeShortcuts import hInt
 from hwtHdlParsers.tests.baseSynthesizerTC import VERILOG_DIR
 from hwtHdlParsers.unitFromHdl import UnitFromHdl
-from hwtLib.interfaces.amba import Axi4_xil
+from hwtLib.amba.axi4 import Axi4
 from hwtLib.tests.synthesizer.interfaceLevel.baseSynthesizerTC import BaseSynthesizerTC
 
 
@@ -53,7 +52,7 @@ class VerilogCodesignTC(BaseSynthesizerTC):
     def test_InterfaceArray2(self):
         class InterfaceArraySample(UnitFromHdl):
             _hdlSources = VERILOG_DIR + "interfaceArrayAxi4.v"
-            _intfClasses = [Axi4_xil] + allInterfaces        
+            _intfClasses = [Axi4] + allInterfaces        
         u = InterfaceArraySample()
         u._loadDeclarations()
         
@@ -77,7 +76,7 @@ class VerilogCodesignTC(BaseSynthesizerTC):
     def test_axiCrossbar(self):
         class U(UnitFromHdl):
             _hdlSources = VERILOG_DIR + "axiCrossbar.v"
-            _intfClasses = [Axi4_xil] + allInterfaces 
+            _intfClasses = [Axi4] + allInterfaces 
         u = U()
         u._loadDeclarations()
         

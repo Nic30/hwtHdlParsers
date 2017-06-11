@@ -1,9 +1,9 @@
 import math
 import unittest
 
-from hdl_toolkit.hdlObjects.package import PackageHeader, PackageBody
-from hdl_toolkit.hdlObjects.typeShortcuts import vecT, hInt
-from hdl_toolkit.hdlObjects.types.defs import INT, STR
+from hwt.hdlObjects.typeShortcuts import vecT, hInt
+from hwt.hdlObjects.types.defs import INT, STR
+from hwtHdlParsers.hdlObjects.package import PackageHeader, PackageBody
 from hwtHdlParsers.loader import ParserFileInfo, ParserLoader
 from hwtHdlParsers.tests.baseSynthesizerTC import VHDL_DIR, VERILOG_DIR
 

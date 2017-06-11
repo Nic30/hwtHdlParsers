@@ -1,4 +1,5 @@
-from hdl_toolkit.intfLvl import UnitFromHdl 
+from hwtHdlParsers.unitFromHdl import UnitFromHdl
+
 
 class EntityWithPartialyInvalidIntf(UnitFromHdl):
     _hdlSources = "vhdl/entityWithPartialyInvalidIntf.vhd"

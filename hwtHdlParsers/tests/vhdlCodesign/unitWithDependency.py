@@ -1,4 +1,4 @@
-from hdl_toolkit.intfLvl import UnitFromHdl
+from hwtHdlParsers.unitFromHdl import UnitFromHdl
 
 
 ws = "vhdl/fnImport/"
@@ -10,7 +10,7 @@ class EntWithFnRequired(UnitFromHdl):
 
  
 if __name__ == "__main__":
-    from hdl_toolkit.synthesizer.shortcuts import toRtl
+    from hwt.synthesizer.shortcuts import toRtl
     u = EntWithFnRequired()
     u._loadDeclarations()
     print(u)

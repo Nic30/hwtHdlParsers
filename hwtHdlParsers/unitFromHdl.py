@@ -2,21 +2,20 @@ from copy import copy
 import inspect, os
 import types
 
-from hdl_toolkit.hdlObjects.entity import Entity
-from hdl_toolkit.hdlObjects.function import Function
-from hdl_toolkit.hdlObjects.operator import Operator
-from hdl_toolkit.hdlObjects.portItem import PortItem
-from hdl_toolkit.hdlObjects.specialValues import INTF_DIRECTION, Unconstrained
-from hdl_toolkit.hdlObjects.value import Value
-from hdl_toolkit.interfaces.all import allInterfaces
+from hwt.hdlObjects.constants import INTF_DIRECTION, Unconstrained
+from hwt.hdlObjects.entity import Entity
+from hwt.hdlObjects.function import Function
+from hwt.hdlObjects.operator import Operator
+from hwt.hdlObjects.portItem import PortItem
+from hwt.hdlObjects.value import Value
+from hwt.synthesizer.interfaceLevel.interfaceUtils.utils import walkPhysInterfaces
+from hwt.synthesizer.interfaceLevel.unit import Unit
+from hwt.synthesizer.interfaceLevel.unitUtils import defaultUnitName
+from hwt.synthesizer.param import Param
+from hwt.synthesizer.rtlLevel.mainBases import RtlSignalBase
+from hwt.synthesizer.uniqList import UniqList
+from hwtHdlParsers.hdlObjects.hdlContext import RequireImportErr
 from hwtHdlParsers.utils import entityFromFile, loadCntxWithDependencies
-from hdl_toolkit.synthesizer.interfaceLevel.interfaceUtils.utils import walkPhysInterfaces
-from hdl_toolkit.synthesizer.interfaceLevel.unit import Unit
-from hdl_toolkit.synthesizer.interfaceLevel.unitUtils import defaultUnitName
-from hdl_toolkit.synthesizer.param import Param
-from hdl_toolkit.synthesizer.rtlLevel.mainBases import RtlSignalBase
-from hdl_toolkit.synthesizer.uniqList import UniqList
-from hdl_toolkit.hdlObjects.hdlContext import RequireImportErr
 
 
 def cloneExprWithUpdatedParams(expr, paramUpdateDict):
@@ -171,8 +170,6 @@ class UnitFromHdl(Unit):
     @classmethod
     def _build(cls):
         cls._buildFileNames()
-        if not hasattr(cls, "_intfClasses"):
-            cls._intfClasses = allInterfaces
         
         # init hdl object containers on this unit       
         cls._params = []

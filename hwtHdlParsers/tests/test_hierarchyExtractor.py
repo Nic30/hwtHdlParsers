@@ -1,9 +1,9 @@
 import unittest
 
-from hwtHdlParsers.tests.baseSynthesizerTC import VHDL_DIR
-from python_toolkit.arrayQuery import single
-from hwtHdlParsers.loader import ParserFileInfo
+from hwt.pyUtils.arrayQuery import single
 from hwtHdlParsers.compileOrderResolver import resolveComplileOrder
+from hwtHdlParsers.loader import ParserFileInfo
+from hwtHdlParsers.tests.baseSynthesizerTC import VHDL_DIR
 
 
 package1 = VHDL_DIR + 'packWithComps/package1.vhd'

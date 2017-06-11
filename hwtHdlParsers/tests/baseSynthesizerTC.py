@@ -1,7 +1,8 @@
-import unittest
-from hdl_toolkit.hdlObjects.specialValues import INTF_DIRECTION, DIRECTION
-from python_toolkit.arrayQuery import single, NoValueExc
 import os
+import unittest
+
+from hwt.hdlObjects.constants import INTF_DIRECTION, DIRECTION
+from hwt.pyUtils.arrayQuery import single, NoValueExc
 
 
 TEST_BASE = os.path.dirname(os.path.realpath(__file__))
@@ -31,4 +32,3 @@ class BaseSynthesizerTC(unittest.TestCase):
     @staticmethod
     def getPort(entity, portName):
         return single(entity.ports, lambda x: x.name == portName)
-        
