@@ -8,8 +8,9 @@ from hdl_toolkit.hdlObjects.types.defs import INT, UINT, PINT, SLICE
 from hdl_toolkit.interfaces.std import Clk, \
     Rst_n, BramPort, VldSynced
 from hdl_toolkit.synthesizer.param import Param
-from hdl_toolkit.synthesizer.shortcuts import synthesised
+from hdl_toolkit.synthesizer.shortcuts import synthesised, toRtl
 from hwtHdlParsers.tests.baseSynthesizerTC import VHDL_DIR
+from hwtHdlParsers.tests.vhdlCodesign.bram import Bram
 from hwtHdlParsers.unitFromHdl import UnitFromHdl
 from hwtLib.interfaces.amba import AxiLite, AxiStream_withUserAndStrb, AxiStream, \
     AxiStream_withUserAndNoStrb, AxiStream_withoutSTRB
@@ -26,8 +27,12 @@ class VhdlCodesignTC(BaseSynthesizerTC):
         ctx = BaseVhdlContext.getBaseCtx()
         self.assertIs(ctx['integer'], INT)
 
-    def test_bramIntfDiscovered(self):
+    def test_bramSerializability(self):
         from hwtHdlParsers.tests.vhdlCodesign.bram import Bram
+        bram = Bram()
+        s = toRtl(bram)
+
+    def test_bramIntfDiscovered(self):
         bram = Bram()
         bram._loadDeclarations()
         self.assertTrue(hasattr(bram, 'a'), 'port a found')
@@ -326,7 +331,7 @@ class VhdlCodesignTC(BaseSynthesizerTC):
     
 if __name__ == '__main__':
     suite = unittest.TestSuite()
-    # suite.addTest(VhdlCodesignTC('test_axiParams'))
-    suite.addTest(unittest.makeSuite(VhdlCodesignTC))
+    suite.addTest(VhdlCodesignTC('test_bramSerializability'))
+    # suite.addTest(unittest.makeSuite(VhdlCodesignTC))
     runner = unittest.TextTestRunner(verbosity=3)
     runner.run(suite)
