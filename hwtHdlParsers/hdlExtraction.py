@@ -3,10 +3,13 @@ from hwt.hdlObjects.operatorDefs import AllOps
 from hwt.hdlObjects.types.sliceVal import SliceVal
 from hwt.hdlObjects.value import Value
 from hwt.pyUtils.arrayQuery import single, NoValueExc, arr_any
-from hwt.synthesizer.interfaceLevel.interfaceUtils.array import InterfaceArray
+from hwt.synthesizer.interfaceLevel.interfaceUtils.array import InterfaceArray, \
+    splitToTermSet
+from hwt.synthesizer.interfaceLevel.interfaceUtils.utils import walkPhysInterfaces
 from hwt.synthesizer.param import Param
 from hwt.synthesizer.rtlLevel.mainBases import RtlSignalBase
 from hwt.synthesizer.rtlLevel.signalUtils.walkers import walkSignalsInExpr
+from hwt.synthesizer.vectorUtils import getWidthExpr
 from hwtHdlParsers.hdlObjects.expr import ExprComparator
 from hwtHdlParsers.stringUtils import matchIgnorecase
 
@@ -238,3 +241,25 @@ class ExtractableInterface(InterfaceArray):
             except InterfaceIncompatibilityExc:
                 # pass if interface was not found in ports
                 pass
+
+    def _tryExtractMultiplicationFactor(self):
+        widths = []
+        # collect all widths
+        for i in walkPhysInterfaces(self):
+            if i._dtypeMatch or i._boundedEntityPort._dtype.constrain is None:
+                # if is not constrained vector or type was resolved this can not be a interfaceArray
+                return
+            w = getWidthExpr(i._boundedEntityPort._dtype)
+            widths.append(w)
+
+        # find what have all widths in common
+        splitedWidths = map(splitToTermSet, widths)
+        arrLen = None
+        for w in splitedWidths:
+            if arrLen is None:
+                arrLen = w
+            else:
+                arrLen = arrLen.intersection(w)
+
+        if len(arrLen) == 1:  # if is possible to determine arrLen
+            return list(arrLen)[0]
