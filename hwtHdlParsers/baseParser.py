@@ -15,21 +15,22 @@ from hwt.hdlObjects.constants import Unconstrained
 from hwt.hdlObjects.entity import Entity
 from hwt.hdlObjects.operatorDefs import AllOps
 from hwt.hdlObjects.portItem import PortItem
-from hwt.hdlObjects.statements import IfContainer, ReturnContainer, \
-    WhileContainer
+from hwt.hdlObjects.statements import IfContainer, WhileContainer
 from hwt.hdlObjects.typeShortcuts import hInt, vec
 from hwt.hdlObjects.types.bits import Bits
-from hwt.hdlObjects.types.defs import STR 
+from hwt.hdlObjects.types.defs import STR
 from hwt.synthesizer.param import Param
-from hwtHdlParsers.hdlContexts import HDLParseErr 
+from hwtHdlParsers.hdlContexts import HDLParseErr
 from hwtHdlParsers.hdlObjects.function import Function
 from hwtHdlParsers.hdlObjects.hdlContext import HdlContext, RequireImportErr
 from hwtHdlParsers.hdlObjects.package import PackageHeader, PackageBody
 from hwtHdlParsers.hdlObjects.reference import HdlRef
+from hwtHdlParsers.hdlObjects.returnStm import ReturnContainer
 
 
 class ParserException(Exception):
     pass
+
 
 class BaseParser(object):
     VERILOG = 'verilog'
@@ -39,7 +40,7 @@ class BaseParser(object):
         self.caseSensitive = caseSensitive
         self.hierarchyOnly = hierarchyOnly
         self.primaryUnitsOnly = primaryUnitsOnly
-    
+
     def packageHeaderFromJson(self, jPh, ctx):
         ph = PackageHeader(jPh['name'], ctx)
         for jComp in jPh['components']:
@@ -55,7 +56,7 @@ class BaseParser(object):
 
     def packageBodyFromJson(self, jPack, ctx):
         pb = PackageBody(jPack['name'], ctx)
-        
+
         # [TODO] types constants etc
         for jFn in jPack['functions']:
             fn = self.functionFromJson(jFn, ctx)
@@ -63,7 +64,7 @@ class BaseParser(object):
         # if not self.hierarchyOnly:
         #    raise NotImplementedError()
         return pb
-    
+
     def litFromJson(self, jLit, ctx):
             t = jLit['type']
             v = jLit['value']
@@ -84,14 +85,14 @@ class BaseParser(object):
             else:
                 raise HDLParseErr("Unknown type of literal %s" % (t))
             return v
-        
+
     def opFromJson(self, jOp, ctx):
         operator = AllOps.opByName(jOp['operator'])
         op0 = self.exprFromJson(jOp['op0'], ctx)
         ops = [op0]
         if operator == AllOps.TERNARY or operator == AllOps.CALL:
             for jOperand in jOp['operands']:
-                operand = self.exprFromJson(jOperand, ctx) 
+                operand = self.exprFromJson(jOperand, ctx)
                 ops.append(operand)
         else:
             if operator == AllOps.DOT:
@@ -99,18 +100,18 @@ class BaseParser(object):
                 assert l['type'] == "ID"
                 ops.append(l['value'])
             else:
-                ops.append(self.exprFromJson(jOp['op1'], ctx)) 
+                ops.append(self.exprFromJson(jOp['op1'], ctx))
         return operator._evalFn(*ops)
-        
+
     def exprFromJson(self, jExpr, ctx):
         lit = jExpr.get("literal", None)
         if lit:
             return self.litFromJson(lit, ctx)
-        
+
         binOp = jExpr['binOperator']
         if binOp:
             return self.opFromJson(binOp, ctx)
-        
+
         raise HDLParseErr("Unparsable expression %s" % (str(jExpr)))
 
     def portFromJson(self, jPort, ctx, entity):
@@ -130,7 +131,7 @@ class BaseParser(object):
             t_name = self.hdlRefFromJson(op['op0'])
             t = ctx.lookupLocal(t_name)
             specificator = self.exprFromJson(op['op1'], ctx)
-                
+
             return t.applySpecificator(specificator)
         t_name = HdlRef([t_name_str], self.caseSensitive)
         return ctx.lookupLocal(t_name)
@@ -165,7 +166,7 @@ class BaseParser(object):
             return _id
         else:
             return _id.lower()
-         
+
     def entityFromJson(self, jEnt, ctx):
         e = Entity(jEnt['name'])
         if not self.hierarchyOnly:
@@ -174,12 +175,12 @@ class BaseParser(object):
                 g = self.varDeclrJson(jGener, entCtx)
                 e.generics.append(g)
                 entCtx[g._name] = g
-                
+
             # entCtx.update(ctx)
             for jPort in jEnt['ports']:
                 p = self.portFromJson(jPort, entCtx, e)
                 e.ports.append(p)
-            
+
             e.generics.sort(key=lambda x: x.name)
             e.ports.sort(key=lambda x: x.name)
         return e
@@ -204,18 +205,22 @@ class BaseParser(object):
             pass  # [TODO]
             # raise NotImplementedError()
         return a
-    
+
     def statementFromJson(self, jStm, ctx):
         t = jStm['type']
-        expr = lambda name: self.exprFromJson(jStm[name], ctx)
-        stList = lambda name: [ self.statementFromJson(x, ctx) for x in jStm[name]] 
-        
+
+        def expr(name):
+            return self.exprFromJson(jStm[name], ctx)
+
+        def stList(name):
+            return [self.statementFromJson(x, ctx) for x in jStm[name]]
+
         if t == 'ASSIGMENT':
             src = expr('src')
             dst = expr('dst')
-            return Assignment(src, dst)                        
+            return Assignment(src, dst)
         elif t == 'IF':
-            cond = [expr('cond')]    
+            cond = [expr('cond')]
             ifTrue = stList('ifTrue')
             ifFalse = stList('ifFalse')
             return IfContainer(cond, ifTrue, ifFalse)
@@ -227,33 +232,31 @@ class BaseParser(object):
             return WhileContainer(cond, body)
         else:
             raise NotImplementedError(t)
-    
+
     def functionFromJson(self, jFn, ctx):
         name = jFn['name']
         isOperator = jFn['isOperator']
-        returnT = None 
+        returnT = None
         params = []
         exprList = []
         _locals = []
         fnCtx = HdlContext(name, ctx)
         if not self.hierarchyOnly:
             returnT = self.typeFromJson(jFn['returnT'], fnCtx)
-            
+
             for jP in jFn['params']:
-                p = self.varDeclrJson(jP, fnCtx) 
+                p = self.varDeclrJson(jP, fnCtx)
                 params.append(p)
                 fnCtx.insertObj(p, self.caseSensitive, self.hierarchyOnly)
-                
+
             for jL in jFn['locals']:
                 l = self.varDeclrJson(jL, fnCtx)
                 _locals.append(l)
                 fnCtx.insertObj(l, self.caseSensitive, self.hierarchyOnly)
-                
-            
-            
+
             for jStm in jFn['body']:
                 exprList.append(self.statementFromJson(jStm, fnCtx))
-                
+
         return Function(name, returnT, fnCtx, params, _locals, exprList, isOperator)
 
     def hdlRefFromJson(self, jsn):
@@ -280,7 +283,6 @@ class BaseParser(object):
             else:
                 raise NotImplementedError("Not implemented for id part of type %s" % (t))
         return HdlRef(names, self.caseSensitive, allChilds=allChilds)
-    
 
     def parse(self, jsonctx, fileName, ctx):
         """
@@ -304,12 +306,12 @@ class BaseParser(object):
 
         for jPh in jsonctx["packageHeaders"]:
             ph = self.packageHeaderFromJson(jPh, ctx)
-            n = self._hdlId(ph.name) 
+            n = self._hdlId(ph.name)
             if n not in ctx.packages:
                 ctx.insertObj(ph, self.caseSensitive)
             else:
                 ctx.packages[n].update(ph)
-                
+
         for jE in jsonctx["entities"]:
             ent = self.entityFromJson(jE, ctx)
             ent.parent = ctx
@@ -319,7 +321,7 @@ class BaseParser(object):
         if not self.primaryUnitsOnly:
             for jpBody in jsonctx["packages"]:
                 pb = self.packageBodyFromJson(jpBody, ctx)
-                n = self._hdlId(pb.name) 
+                n = self._hdlId(pb.name)
                 if n not in ctx.packages:
                     ph = PackageHeader(n, ctx, isDummy=True)
                     ph.insertBody(pb)
@@ -331,4 +333,3 @@ class BaseParser(object):
                 arch.parent = ctx
                 arch.dependencies = dependencies
                 ctx.insertObj(arch, self.caseSensitive)
-
