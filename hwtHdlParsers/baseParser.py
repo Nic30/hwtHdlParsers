@@ -13,7 +13,6 @@ from hwt.hdlObjects.architecture import Architecture
 from hwt.hdlObjects.assignment import Assignment
 from hwt.hdlObjects.constants import Unconstrained
 from hwt.hdlObjects.entity import Entity
-from hwt.hdlObjects.function import Function
 from hwt.hdlObjects.operatorDefs import AllOps
 from hwt.hdlObjects.portItem import PortItem
 from hwt.hdlObjects.statements import IfContainer, ReturnContainer, \
@@ -23,6 +22,7 @@ from hwt.hdlObjects.types.bits import Bits
 from hwt.hdlObjects.types.defs import STR 
 from hwt.synthesizer.param import Param
 from hwtHdlParsers.hdlContexts import HDLParseErr 
+from hwtHdlParsers.hdlObjects.function import Function
 from hwtHdlParsers.hdlObjects.hdlContext import HdlContext, RequireImportErr
 from hwtHdlParsers.hdlObjects.package import PackageHeader, PackageBody
 from hwtHdlParsers.hdlObjects.reference import HdlRef

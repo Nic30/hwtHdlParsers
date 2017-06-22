@@ -1,15 +1,15 @@
 from hwt.hdlObjects.constants import INTF_DIRECTION
+from hwt.hdlObjects.operator import Operator
 from hwt.hdlObjects.operatorDefs import AllOps
+from hwt.hdlObjects.types.integer import Integer
 from hwt.hdlObjects.types.sliceVal import SliceVal
 from hwt.hdlObjects.value import Value
 from hwt.pyUtils.arrayQuery import single, NoValueExc, arr_any
-from hwt.synthesizer.interfaceLevel.interfaceUtils.array import InterfaceArray, \
-    splitToTermSet
+from hwt.synthesizer.interfaceLevel.interfaceUtils.array import InterfaceArray
 from hwt.synthesizer.interfaceLevel.interfaceUtils.utils import walkPhysInterfaces
 from hwt.synthesizer.param import Param
 from hwt.synthesizer.rtlLevel.mainBases import RtlSignalBase
-from hwt.synthesizer.rtlLevel.signalUtils.walkers import walkSignalsInExpr
-from hwt.synthesizer.vectorUtils import getWidthExpr
+from hwt.synthesizer.rtlLevel.signalUtils.exceptions import MultipleDriversExc
 from hwtHdlParsers.hdlObjects.expr import ExprComparator
 from hwtHdlParsers.stringUtils import matchIgnorecase
 
@@ -17,6 +17,42 @@ from hwtHdlParsers.stringUtils import matchIgnorecase
 class InterfaceIncompatibilityExc(Exception):
     pass
 
+
+def getWidthExpr(vectorTypeInst):
+    c = vectorTypeInst.constrain
+    if isinstance(c, SliceVal):
+        return c.val[0] + 1
+    downto = c.singleDriver()
+
+    assert downto.operator == AllOps.DOWNTO
+    assert downto.ops[1].val == 0
+
+    widthMinOne = downto.ops[0]
+    if isinstance(widthMinOne, Value) and isinstance(widthMinOne._dtype, Integer):
+        w = widthMinOne.clone()
+        w.val += 1
+        return w
+    else:
+        widthMinOne = widthMinOne.singleDriver()
+    assert widthMinOne.operator == AllOps.SUB
+    assert widthMinOne.ops[1].val == 1
+
+    return widthMinOne.ops[0]
+
+
+def splitToTermSet(width):
+    """
+    try split width expression to multiplicands
+    """
+    try:
+        width = width.singleDriver()
+    except (AttributeError, MultipleDriversExc):
+        return set([width])
+    if width.operator == AllOps.DIV:
+        pass
+    assert width.operator == AllOps.MUL
+    return set(width.ops)
+  
 
 def updateParam(intfParam, unitParam):
     if isinstance(unitParam, Param):
@@ -26,6 +62,24 @@ def updateParam(intfParam, unitParam):
     else:
         # parameter resolution was not successful
         pass
+
+
+
+def walkSignalsInExpr(expr):
+    if isinstance(expr, Value):
+        return
+    elif isinstance(expr, Operator):
+        for op in expr.ops:
+            if op is not expr:
+                yield from walkSignalsInExpr(op)
+    elif isinstance(expr, RtlSignalBase):
+        if hasattr(expr, "origin"):
+            yield from walkSignalsInExpr(expr.origin)
+        else:
+            yield expr
+    else:
+        raise Exception("Unknown node '%s' type %s" % 
+                        (repr(expr), str(expr.__class__)))
 
 
 def typeIsParametrized(dtype):

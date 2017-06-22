@@ -4,7 +4,6 @@ import types
 
 from hwt.hdlObjects.constants import INTF_DIRECTION, Unconstrained
 from hwt.hdlObjects.entity import Entity
-from hwt.hdlObjects.function import Function
 from hwt.hdlObjects.operator import Operator
 from hwt.hdlObjects.portItem import PortItem
 from hwt.hdlObjects.value import Value
@@ -14,6 +13,7 @@ from hwt.synthesizer.interfaceLevel.unitUtils import defaultUnitName
 from hwt.synthesizer.param import Param
 from hwt.synthesizer.rtlLevel.mainBases import RtlSignalBase
 from hwt.synthesizer.uniqList import UniqList
+from hwtHdlParsers.hdlObjects.function import Function
 from hwtHdlParsers.hdlObjects.hdlContext import RequireImportErr
 from hwtHdlParsers.utils import entityFromFile, loadCntxWithDependencies
 
